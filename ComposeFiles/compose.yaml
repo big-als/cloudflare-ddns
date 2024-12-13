@@ -1,0 +1,6 @@
+services:
+  Cloudflare:
+    restart: unless-stopped
+    image: alexhorst/cloudflare-ddns
+    env_file:
+      - .env
