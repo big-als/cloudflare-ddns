@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/powershell
 
 SHELL ["/bin/sh", "-c"]
 RUN mkdir DDNS && apt update && apt install -y crond && apt install -y tzdata
-ENV TZ=America/Los_Angeles
+ENV TZ=America/Los_Angeles CRON="0 0 * * *"
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 COPY ./cloudflare-ddns.ps1 /DDNS/cloudflare-ddns.ps1
 COPY ./crontab /etc/cron.d/crontab
