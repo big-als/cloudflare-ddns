@@ -1,5 +1,15 @@
 #requires -Version 7.1
 
+<#	
+	.NOTES
+	    ===========================================================================
+	    Credits:   		https://adamtheautomator.com/cloudflare-dynamic-dns/
+	    Filename:     	cloudflare-ddns.ps1
+	    ===========================================================================
+	.DESCRIPTION
+		Used to update host records in Cloudflare. Will not update if IP hasn't changed.
+#>
+
 [cmdletbinding()]
 param (
     [parameter(Mandatory)]
