@@ -43,7 +43,7 @@ if (-not($auth_result.result)) {
     # Exit script
     return
 }
-Write-Output "[$($date)] API token validation [$($Token)] success. $($auth_result.messages.message)."
+Write-Output "[$($date)] API token validation success. $($auth_result.messages.message)."
 #EndRegion
 
 #Region Get Zone ID
