@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/powershell:alpine
+
+RUN apk add --no-cache tzdata
+
+WORKDIR /app
+
+COPY entrypoint.sh /entrypoint.sh
+COPY cloudflare-ddns.ps1 /app/cloudflare-ddns.ps1
+
+RUN chmod +x /entrypoint.sh
+
+ENV TZ=UTC
+
+ENTRYPOINT ["/entrypoint.sh"]
