@@ -1,7 +1,7 @@
 # Multi-stage build to minimize final image size
-FROM alpine:3.18 AS builder
+FROM alpine:3.23 AS builder
 
-ARG POWERSHELL_VERSION=7.5.2
+ARG POWERSHELL_VERSION=7.6.1
 
 RUN apk add --no-cache --virtual .build-deps curl \
     && curl -L -o /tmp/powershell.tar.gz \
@@ -11,7 +11,7 @@ RUN apk add --no-cache --virtual .build-deps curl \
     && chmod +x /opt/microsoft/powershell/7/pwsh \
     && rm -rf /tmp/powershell.tar.gz
 
-FROM alpine:3.18
+FROM alpine:3.23
 
 # Copy PowerShell from builder stage
 COPY --from=builder /opt/microsoft/powershell/7 /opt/microsoft/powershell/7
