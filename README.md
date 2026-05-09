@@ -82,7 +82,6 @@ The optimized Alpine Linux image with PowerShell 7.6.1:
 
 - **Tag**: `cloudflare-ddns:alpine`
 - **Base**: Alpine 3.23 with multi-stage build
-- **Security**: CVE-2026-26171 patched
 
 Build from source:
 ```bash
