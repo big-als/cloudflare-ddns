@@ -29,14 +29,21 @@ A Docker-based Dynamic DNS (DDNS) updater for Cloudflare, written in PowerShell.
 2. Configure your environment variables in `ComposeFiles/.env`:
    ```env
    CF_API_TOKEN=your_cloudflare_api_token
-   CF_ZONE_ID=your_zone_id
+   CF_ZONE_ID=example.com
    CF_RECORD_NAME=your.subdomain.example.com
    CF_EMAIL=your_email@example.com
    CHECK_INTERVAL=300
    TZ=America/New_York
    ```
 
-3. Run with Docker Compose:
+3. Build the image:
+   ```bash
+   cd "Powershell Alpine Base"
+   docker build -t cloudflare-ddns:alpine .
+   cd ..
+   ```
+
+4. Run with Docker Compose:
    ```bash
    docker-compose -f ComposeFiles/compose.yaml up -d
    ```
@@ -46,8 +53,8 @@ A Docker-based Dynamic DNS (DDNS) updater for Cloudflare, written in PowerShell.
 ```bash
 docker run --name cloudflare-ddns \
   -e CF_API_TOKEN=your_api_token \
-  -e CF_ZONE_ID=your_zone_id \
-  -e CF_RECORD_NAME=your.record.com \
+  -e CF_ZONE_ID=example.com \
+  -e CF_RECORD_NAME=home.example.com \
   -e CF_EMAIL=your@email.com \
   -e CHECK_INTERVAL=300 \
   -e TZ=UTC \
@@ -59,40 +66,28 @@ docker run --name cloudflare-ddns \
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `CF_API_TOKEN` | Cloudflare API token with DNS edit permissions | Yes | - |
-| `CF_ZONE_ID` | Cloudflare zone ID for your domain | Yes | - |
+| `CF_ZONE_ID` | Root domain name managed in Cloudflare (e.g., `example.com`) | Yes | - |
 | `CF_RECORD_NAME` | DNS record name to update (e.g., `home.example.com`) | Yes | - |
 | `CF_EMAIL` | Email associated with your Cloudflare account | Yes | - |
 | `CHECK_INTERVAL` | Time between IP checks in seconds | No | 300 |
 | `TZ` | Timezone for logging (e.g., `America/New_York`) | No | UTC |
 
-## Docker Images
+> **Note:** `CF_ZONE_ID` must be the root domain name (e.g., `example.com`), not the Cloudflare zone ID hash. The script uses this value to look up the zone ID automatically via the Cloudflare API.
 
-### Alpine Linux (Recommended)
+## Docker Image
 
-The optimized Alpine Linux image with PowerShell 7.5.2:
+### Alpine Linux
+
+The optimized Alpine Linux image with PowerShell 7.6.1:
 
 - **Tag**: `cloudflare-ddns:alpine`
-- **Size**: ~306MB
-- **Base**: Alpine 3.18 with multi-stage build
+- **Base**: Alpine 3.23 with multi-stage build
 - **Security**: CVE-2026-26171 patched
 
 Build from source:
 ```bash
-cd Powershell\ Alpine\ Base
+cd "Powershell Alpine Base"
 docker build -t cloudflare-ddns:alpine .
-```
-
-### Ubuntu/Debian
-
-The original Ubuntu-based image:
-
-- **Tag**: `cloudflare-ddns:latest`
-- **Base**: Ubuntu with PowerShell
-- **Size**: Larger than Alpine variant
-
-Build from source:
-```bash
-docker build -t cloudflare-ddns:latest .
 ```
 
 ## API Token Setup
@@ -102,9 +97,10 @@ docker build -t cloudflare-ddns:latest .
 3. Create a new token with **Edit** permissions for **DNS**
 4. Copy the token value for use in `CF_API_TOKEN`
 
-## Zone ID Lookup
+## Domain Name
 
-Find your zone ID:
+The `CF_ZONE_ID` variable expects your root domain name as registered in Cloudflare (e.g., `example.com`). The script queries the Cloudflare API to resolve the zone ID automatically:
+
 ```bash
 curl -X GET "https://api.cloudflare.com/client/v4/zones?name=example.com" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
@@ -129,21 +125,29 @@ The container logs all operations with timestamps:
 ### Common Issues
 
 1. **API Token Errors**: Verify your token has DNS edit permissions
-2. **Zone Not Found**: Check your `CF_ZONE_ID` matches your domain
+2. **Zone Not Found**: Check that `CF_ZONE_ID` is the root domain name (e.g., `example.com`), not the zone ID hash
 3. **Record Not Found**: Ensure the record exists in Cloudflare
-4. **Permission Denied**: The container runs as non-root; timezone changes are logged but not applied
+4. **Permission Denied**: The container runs as non-root (`pwshuser`)
 
 ### Debug Mode
 
-Run interactively to debug:
+Run an interactive shell to debug:
 ```bash
 docker run -it --rm \
+  --entrypoint /bin/sh \
   -e CF_API_TOKEN=your_token \
-  -e CF_ZONE_ID=your_zone \
-  -e CF_RECORD_NAME=your_record \
+  -e CF_ZONE_ID=example.com \
+  -e CF_RECORD_NAME=home.example.com \
   -e CF_EMAIL=your_email \
+  cloudflare-ddns:alpine
+```
+
+To run a single PowerShell command:
+```bash
+docker run -it --rm \
+  --entrypoint pwsh \
   cloudflare-ddns:alpine \
-  pwsh -NoLogo -Command 'Write-Host "Debug mode"'
+  -NoLogo -Command 'Write-Host "Debug mode"'
 ```
 
 ## Security Considerations
@@ -158,7 +162,7 @@ docker run -it --rm \
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test with both image variants
+4. Test the image build and container behaviour
 5. Submit a pull request
 
 ## License
