@@ -67,7 +67,7 @@ docker run --name cloudflare-ddns \
 | `CF_RECORD_NAME` | DNS record name to update (e.g., `home.example.com`) | Yes | - |
 | `CF_EMAIL` | Email associated with your Cloudflare account | Yes | - |
 | `CHECK_INTERVAL` | Time between IP checks in seconds | No | 300 |
-| `TZ` | Timezone for logging (e.g., `America/New_York`) | No | UTC |
+| `TZ` | Timezone for logging (e.g., `America/New_York`) — see [tz database time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) | No | UTC |
 
 > **Note:** `CF_ZONE_ID` must be the root domain name (e.g., `example.com`), not the Cloudflare zone ID hash. The script uses this value to look up the zone ID automatically via the Cloudflare API.
 
