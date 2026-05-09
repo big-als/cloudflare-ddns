@@ -1,13 +1,46 @@
-FROM mcr.microsoft.com/powershell:alpine
+# Multi-stage build to minimize final image size
+FROM alpine:3.18 AS builder
 
-RUN apk add --no-cache tzdata
+ARG POWERSHELL_VERSION=7.5.2
+
+RUN apk add --no-cache --virtual .build-deps curl \
+    && curl -L -o /tmp/powershell.tar.gz \
+        https://github.com/PowerShell/PowerShell/releases/download/v${POWERSHELL_VERSION}/powershell-${POWERSHELL_VERSION}-linux-musl-x64.tar.gz \
+    && mkdir -p /opt/microsoft/powershell/7 \
+    && tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7 \
+    && chmod +x /opt/microsoft/powershell/7/pwsh \
+    && rm -rf /tmp/powershell.tar.gz
+
+FROM alpine:3.18
+
+# Copy PowerShell from builder stage
+COPY --from=builder /opt/microsoft/powershell/7 /opt/microsoft/powershell/7
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    ca-certificates \
+    ncurses-terminfo-base \
+    krb5-libs \
+    libgcc \
+    libintl \
+    libssl3 \
+    libstdc++ \
+    tzdata \
+    userspace-rcu \
+    zlib \
+    icu-libs \
+    && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
 COPY entrypoint.sh /entrypoint.sh
 COPY cloudflare-ddns.ps1 /app/cloudflare-ddns.ps1
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+    && adduser -D pwshuser
+
+USER pwshuser
 
 ENV TZ=UTC
 
