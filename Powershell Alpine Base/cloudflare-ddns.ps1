@@ -109,6 +109,16 @@ if ($new_ip -ne $old_ip) {
         return
     }
 
+    foreach ($dateField in @('created_on', 'modified_on')) {
+        if ($Update.result.PSObject.Properties.Name -contains $dateField) {
+            $dateValue = $Update.result.$dateField
+            $parsedDate = [datetime]::MinValue
+            if ($dateValue -and [datetime]::TryParse($dateValue, [ref]$parsedDate)) {
+                $Update.result.$dateField = $parsedDate.ToLocalTime().ToString('dd/MM/yyyy HH:mm "UTC"zzz')
+            }
+        }
+    }
+
     Write-Output "[$($date)] DNS record update successful."
     return ($Update.result)
 }
