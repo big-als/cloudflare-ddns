@@ -26,7 +26,11 @@ A Docker-based Dynamic DNS (DDNS) updater for Cloudflare, written in PowerShell.
    cd cloudflare-ddns
    ```
 
-2. Configure your environment variables in `ComposeFiles/.env`:
+2. Copy the example env file and fill in your values:
+   ```bash
+   cp ComposeFiles/example.env ComposeFiles/.env
+   ```
+   Then edit `ComposeFiles/.env`:
    ```env
    CF_API_TOKEN=your_cloudflare_api_token
    CF_ZONE_ID=example.com
