@@ -75,7 +75,7 @@ docker run --name cloudflare-ddns \
 
 ### Alpine Linux
 
-The optimized Alpine Linux image with PowerShell 7.6.1:
+The optimized Alpine Linux image with PowerShell:
 
 - **Published image**: `alexhorst/cloudflare-ddns:alpine`
 - **Base**: Alpine 3.23 with multi-stage build
