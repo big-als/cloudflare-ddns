@@ -1,9 +1,6 @@
 services:
   cloudflare-ddns:
-    build:
-      context: ../Powershell Alpine Base
-      dockerfile: dockerfile
-    image: cloudflare-ddns:alpine
+    image: alexhorst/cloudflare-ddns:alpine
     container_name: cloudflare-ddns
     restart: unless-stopped
     env_file:

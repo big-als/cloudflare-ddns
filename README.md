@@ -20,7 +20,7 @@ A Docker-based Dynamic DNS (DDNS) updater for Cloudflare, written in PowerShell.
 
 ### Using Docker Compose
 
-1. Clone this repository:
+1. Copy `ComposeFiles/.env` and `ComposeFiles/compose.yaml` from this repository (or clone it):
    ```bash
    git clone https://github.com/big-als/cloudflare-ddns.git
    cd cloudflare-ddns
@@ -36,14 +36,7 @@ A Docker-based Dynamic DNS (DDNS) updater for Cloudflare, written in PowerShell.
    TZ=America/New_York
    ```
 
-3. Build the image:
-   ```bash
-   cd "Powershell Alpine Base"
-   docker build -t cloudflare-ddns:alpine .
-   cd ..
-   ```
-
-4. Run with Docker Compose:
+3. Run with Docker Compose:
    ```bash
    docker-compose -f ComposeFiles/compose.yaml up -d
    ```
@@ -58,7 +51,7 @@ docker run --name cloudflare-ddns \
   -e CF_EMAIL=your@email.com \
   -e CHECK_INTERVAL=300 \
   -e TZ=UTC \
-  cloudflare-ddns:alpine
+  alexhorst/cloudflare-ddns:alpine
 ```
 
 ## Environment Variables
@@ -80,10 +73,15 @@ docker run --name cloudflare-ddns \
 
 The optimized Alpine Linux image with PowerShell 7.6.1:
 
-- **Tag**: `cloudflare-ddns:alpine`
+- **Published image**: `alexhorst/cloudflare-ddns:alpine`
 - **Base**: Alpine 3.23 with multi-stage build
 
-Build from source:
+Pull the published image:
+```bash
+docker pull alexhorst/cloudflare-ddns:alpine
+```
+
+Or build from source:
 ```bash
 cd "Powershell Alpine Base"
 docker build -t cloudflare-ddns:alpine .
