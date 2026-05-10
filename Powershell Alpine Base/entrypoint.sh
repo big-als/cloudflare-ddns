@@ -8,10 +8,13 @@ echo "Starting Cloudflare DDNS container..."
 echo "Interval: ${CHECK_INTERVAL}s"
 
 # Basic validation
-if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ZONE_ID" ] || [ -z "$CF_RECORD_NAME" ] || [ -z "$CF_EMAIL" ]; then
-  echo "ERROR: Missing required environment variables"
-  exit 1
-fi
+for var in CF_API_TOKEN CF_ZONE_ID CF_RECORD_NAME CF_EMAIL; do
+  eval "val=\$$var"
+  if [ -z "$val" ]; then
+    echo "ERROR: Missing required environment variable: $var"
+    exit 1
+  fi
+done
 
 while true; do
   echo "Running DDNS update at $(date)"
